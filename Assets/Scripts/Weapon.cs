@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public abstract class Weapon : MonoBehaviour
 {
     [SerializeField] Bullet bulletPrefab;
     [SerializeField] int magazineSize;
     [SerializeField] float fireRate;
 
 
-    public virtual void Shoot() { }
+    public abstract void Shoot();
    
 }
