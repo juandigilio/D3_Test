@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     
     private Rigidbody2D rb;
-    private float direction;
+    private float direction = 1f;
     private Vector2 inputDirection;
 
     private void OnEnable()
@@ -29,24 +29,17 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (inputDirection != Vector2.zero)
-        {
-            Move();
-        }
+        Move();
+        Aim();
     }
 
     public void SetInputDirection(Vector2 newDirection)
     {
         inputDirection = newDirection.normalized;
 
-        if (inputDirection != Vector2.zero)
+        if (inputDirection.x != 0)
         {
             direction = inputDirection.x;
-            Move();
-        }
-        else
-        {
-            //stop inertia
         }
     }
 
@@ -57,8 +50,23 @@ public class PlayerController : MonoBehaviour
             Vector2 movement = new Vector2(inputDirection.x * moveSpeed, rb.linearVelocity.y);
             rb.linearVelocity = movement;
 
-            Vector2 aimingDirection = 
-            sight.transform.localPosition = inputDirection;
+            sight.transform.localPosition = inputDirection * sightOffset;
+        }
+        else
+        {
+            //stop inertia
+        }
+    }
+
+    private void Aim()
+    {
+        if (inputDirection != Vector2.zero)
+        {
+            sight.transform.localPosition = inputDirection * sightOffset;
+        }
+        else
+        {
+            sight.transform.localPosition = new Vector2(direction * sightOffset, 0);
         }
     }
 }
