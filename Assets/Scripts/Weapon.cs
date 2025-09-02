@@ -9,6 +9,7 @@ public enum WeaponType
 
 public class Weapon : MonoBehaviour
 {
+    [SerializeField] private Transform weaponHolder;
     [SerializeField] private WeaponType weaponType;
     [SerializeField] private Bullet bulletPrefab;
     [SerializeField] Transform firePoint;
@@ -36,6 +37,11 @@ public class Weapon : MonoBehaviour
         fireCooldown += Time.deltaTime;
     }
 
+    private void FixedUpdate()
+    {
+        transform.position = weaponHolder.transform.position;
+    }
+
     public void Shoot(Vector2 direction)
     {
         if (fireCooldown > fireRate)
@@ -44,6 +50,8 @@ public class Weapon : MonoBehaviour
 
             Bullet newBullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
             newBullet.Activate(firePoint.position, direction, bulletSpeed, bulletLifeDistance, bulletDamage, bulletIsDestroyable);
+
+            currentAmmo--;
         }
     }
 
@@ -81,5 +89,10 @@ public class Weapon : MonoBehaviour
     public bool HasAmmo()
     {
         return currentAmmo > 0;
+    }
+
+    public Transform GetFirePoint()
+    {
+        return firePoint;
     }
 }
