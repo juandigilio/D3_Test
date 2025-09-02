@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private Weapon pistol;
+    [SerializeField] private Weapon automatic;
+    [SerializeField] private Weapon rifle;
     [SerializeField] private GameObject sight;
     [SerializeField] private float sightOffset = 1f;
     [SerializeField] private float moveSpeed = 5f;
@@ -11,6 +14,9 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private float direction = 1f;
     private Vector2 inputDirection;
+
+    private bool hasAutomatic = false;
+    private bool hasRifle = false;
 
     private void OnEnable()
     {
