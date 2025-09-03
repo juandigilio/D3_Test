@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,12 +13,11 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private float direction = 1f;
     private Vector2 inputDirection;
-    private int currentWeapon = 1;
+    private int currentWeapon = 0;
+    private bool isShooting = false;
 
-    [SerializeField] private Weapon weapon;
-    [SerializeField] private Weapon pistol;
-    [SerializeField] private Weapon automatic;
-    [SerializeField] private Weapon rifle;
+    //1-Pistol 2-Automatic 3-Rifle
+    [SerializeField] private List<Weapon> weapons = new List<Weapon>();
 
     private void OnEnable()
     {
@@ -27,10 +27,10 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        weapon = pistol;
-        weapon.gameObject.SetActive(true);
-        automatic.gameObject.SetActive(false);
-        rifle.gameObject.SetActive(false);
+
+        weapons[0].gameObject.SetActive(true);
+        weapons[1].gameObject.SetActive(false);
+        weapons[2].gameObject.SetActive(false);
     }
 
     private void Update()
@@ -42,24 +42,33 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         Aim();
+        Shoot();
     }
 
-    public void Shoot()
+    private void Shoot()
     {
-        if (!weapon.HasAmmo())
+        if (isShooting)
         {
-            NextWeapon();
+            if (!weapons[currentWeapon].HasAmmo())
+            {
+                NextWeapon();
+            }
+
+            Vector2 shootDirection = (sight.transform.localPosition - weapons[currentWeapon].GetFirePoint()).normalized;
+
+            weapons[currentWeapon].Shoot(shootDirection);
         }
+    }
 
-        Vector2 shootDirection = (sight.transform.localPosition - weapon.GetFirePoint().transform.position).normalized;
-
-        weapon.Shoot(shootDirection);
+    public void SetShooting(bool shooting)
+    {
+        isShooting = shooting;
     }
 
     public void NextWeapon()
     {
         currentWeapon++;
-        if (currentWeapon > 3) currentWeapon = 1;
+        if (currentWeapon > 2) currentWeapon = 0;
 
         SwitchWeapon(NextWeapon);
     }
@@ -67,7 +76,7 @@ public class PlayerController : MonoBehaviour
     public void PreviousWeapon()
     {
         currentWeapon--;
-        if (currentWeapon < 1) currentWeapon = 3;
+        if (currentWeapon < 0) currentWeapon = 2;
 
         SwitchWeapon(PreviousWeapon);
     }
@@ -84,16 +93,14 @@ public class PlayerController : MonoBehaviour
             {
                 //transform.localScale = new Vector3(1, 1, 1);
                 //sight.transform.localScale = new Vector3(1, 1, 1);
+                //weapons[currentWeapon].transform.localScale = new Vector3(1, 1, 1);
             }
             else if (direction < 0)
             {
                 //transform.localScale = new Vector3(-1, 1, 1);
                 //sight.transform.localScale = new Vector3(-1, 1, 1);
+                //weapons[currentWeapon].transform.localScale = new Vector3(-1, 1, 1);
             }
-
-            //Vector3 scale = transform.localScale;
-            //scale.x = Mathf.Sign(direction) * Mathf.Abs(scale.x);
-            //transform.localScale = scale;
         }
     }
 
@@ -103,77 +110,52 @@ public class PlayerController : MonoBehaviour
         {
             Vector2 movement = new Vector2(inputDirection.x * moveSpeed, rb.linearVelocity.y);
             rb.linearVelocity = movement;
-
-            sight.transform.localPosition = inputDirection * sightOffset;
         }
         else
         {
-            //stop inertia
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
         }
     }
 
     private void Aim()
     {
+        float angle;
+        Vector2 newDisplacement = weapons[currentWeapon].GetFirePoint();
+
         if (inputDirection != Vector2.zero)
         {
-            sight.transform.localPosition = new Vector2(weapon.GetFirePoint().transform.position.x, weapon.GetFirePoint().transform.position.y) + (inputDirection * sightOffset);
+            angle = Mathf.Atan2(inputDirection.y, inputDirection.x) * Mathf.Rad2Deg;
+            weapons[currentWeapon].AimAt(angle);
+            sight.transform.localPosition = newDisplacement + (inputDirection * sightOffset);
         }
-        //else
-        //{
-        //    sight.transform.localPosition = new Vector2(direction * sightOffset, 0);
-        //}
+        else
+        {
+            if (direction >= 0) angle = 0;
+            else angle = 180;
 
+            weapons[currentWeapon].AimAt(angle);
+            sight.transform.localPosition = new Vector2(direction * sightOffset, 0) + newDisplacement;
+        }
     }
 
     private void SwitchWeapon(Action onNoAmmo)
     {
-        switch (currentWeapon)
+        if (weapons[currentWeapon].HasAmmo())
         {
-            case 1:
+            weapons[currentWeapon].gameObject.SetActive(true);
+
+            for (int i = 0; i < weapons.Count; i++)
             {
-                if (pistol.HasAmmo())
+                if (i != currentWeapon)
                 {
-                    pistol.gameObject.SetActive(true);
-                    automatic.gameObject.SetActive(false);
-                    rifle.gameObject.SetActive(false);
-                    weapon = pistol;
+                    weapons[i].gameObject.SetActive(false);
                 }
-                else
-                {
-                    onNoAmmo?.Invoke();
-                }
-                break;
             }
-            case 2:
-            {
-                if (automatic.HasAmmo())
-                {
-                    pistol.gameObject.SetActive(false);
-                    automatic.gameObject.SetActive(true);
-                    rifle.gameObject.SetActive(false);
-                    weapon = automatic;
-                }
-                else
-                {
-                    onNoAmmo?.Invoke();
-                }
-                break;
-            }
-            case 3:
-            {
-                if (rifle.HasAmmo())
-                {
-                    pistol.gameObject.SetActive(false);
-                    automatic.gameObject.SetActive(false);
-                    rifle.gameObject.SetActive(true);
-                    weapon = rifle;
-                }
-                else
-                {
-                    onNoAmmo?.Invoke();
-                }
-                break;
-            }
+            return;
+        }
+        else
+        {
+            onNoAmmo?.Invoke();
         }
     }
 }

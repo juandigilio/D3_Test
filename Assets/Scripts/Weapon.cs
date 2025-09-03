@@ -9,7 +9,6 @@ public enum WeaponType
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private Transform weaponHolder;
     [SerializeField] private WeaponType weaponType;
     [SerializeField] private Bullet bulletPrefab;
     [SerializeField] Transform firePoint;
@@ -39,7 +38,12 @@ public class Weapon : MonoBehaviour
 
     private void FixedUpdate()
     {
-        transform.position = weaponHolder.transform.position;
+
+    }
+
+    public void AimAt(float angle)
+    {
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     public void Shoot(Vector2 direction)
@@ -60,18 +64,18 @@ public class Weapon : MonoBehaviour
         if (weaponType == WeaponType.Pistol)
         {
             magazineSize = 999999;
-            fireRate = 0.8f;
+            fireRate = 0.5f;
             bulletSpeed = 10f;
-            bulletLifeDistance = 2f;
+            bulletLifeDistance = 8f;
             bulletDamage = 1;
             bulletIsDestroyable = true;
         }
         else if (weaponType == WeaponType.Automatic)
         {
             magazineSize = 500;
-            fireRate = 0.2f;
+            fireRate = 0.1f;
             bulletSpeed = 15f;
-            bulletLifeDistance = 5f;
+            bulletLifeDistance = 10f;
             bulletDamage = 1;
             bulletIsDestroyable = true;
         }
@@ -80,7 +84,7 @@ public class Weapon : MonoBehaviour
             magazineSize = 50;
             fireRate = 1f;
             bulletSpeed = 20f;
-            bulletLifeDistance = 10f;
+            bulletLifeDistance = 20f;
             bulletDamage = 3;
             bulletIsDestroyable = false;
         }
@@ -91,8 +95,8 @@ public class Weapon : MonoBehaviour
         return currentAmmo > 0;
     }
 
-    public Transform GetFirePoint()
+    public Vector3 GetFirePoint()
     {
-        return firePoint;
+        return firePoint.localPosition;
     }
 }

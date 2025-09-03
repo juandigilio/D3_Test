@@ -5,14 +5,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform leftPoint;
     [SerializeField] private Transform rightPoint;
-    [SerializeField] private float speed = 2f;
+    [SerializeField] private float speed = 20f;
     [SerializeField] private int health = 1;
     [SerializeField] private int damage = 1;
 
     private PlayerController playerController;
     private Rigidbody2D rigidBody;
-    private bool movingRight = true;
-    private bool isShooting = false;
+    [SerializeField] private bool movingRight = true;
+    [SerializeField] private bool isShooting = false;
 
 
 
@@ -66,25 +66,24 @@ public class Enemy : MonoBehaviour
 
         if (movingRight)
         {
-            direction = (transform.position - rightPoint.position).normalized;
-            transform.LookAt(rightPoint.position);
+            direction = Vector2.right;
 
-            if (Vector2.Distance(transform.position, rightPoint.position) < 0.1f)
+            if (transform.position.x >= rightPoint.position.x)
             {
                 movingRight = false;
             }
         }
         else
         {
-            direction = (transform.position - leftPoint.position).normalized;
+            direction = Vector2.left;
 
-            if (Vector2.Distance(transform.position, leftPoint.position) < 0.1f)
+            if (transform.position.x <= leftPoint.position.x)
             {
                 movingRight = true;
             }
         }
-           
-        rigidBody.AddForce(direction * speed * Time.deltaTime);
+        Vector2 movemenDirection = new Vector2(direction.x * speed, rigidBody.linearVelocity.y);
+        rigidBody.linearVelocity = movemenDirection;
     }
 
     private void Attack()
