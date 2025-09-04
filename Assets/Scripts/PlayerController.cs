@@ -18,8 +18,8 @@ public class PlayerController : MonoBehaviour
     private bool isShooting = false;
     private int availableLives = 8;
 
-    private int maxJumps = 2;
-    private int jumpsRemaining;
+    private bool jumped = false;
+    private bool doubleJumped = false;
     private float rayLength;
 
     //1-Pistol 2-Automatic 3-Rifle
@@ -37,8 +37,6 @@ public class PlayerController : MonoBehaviour
         weapons[0].gameObject.SetActive(true);
         weapons[1].gameObject.SetActive(false);
         weapons[2].gameObject.SetActive(false);
-
-        jumpsRemaining = maxJumps;
 
         Collider2D col = GetComponent<Collider2D>();
         rayLength = col.bounds.extents.y;
@@ -75,12 +73,19 @@ public class PlayerController : MonoBehaviour
 
     public void Jump()
     {
-        if (jumpsRemaining > 0)
+        if (!doubleJumped)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-            jumpsRemaining--;
+            if (!jumped)
+            {
+                jumped = true;
+            }
+            else
+            {
+                doubleJumped = true;
+            }
         }
     }
 
@@ -130,16 +135,22 @@ public class PlayerController : MonoBehaviour
 
     private void CheckGrounded()
     {
+        if (rb.linearVelocityY > 0) return;
+
         float extraHeight = 0.1f;
 
         Debug.DrawRay(transform.position, Vector2.down * (rayLength + extraHeight), Color.green);
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, rayLength + extraHeight);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, Vector2.down, rayLength + extraHeight);
 
-        if (hit.collider != null)
+        foreach (RaycastHit2D hit in hits)
         {
-            jumpsRemaining = maxJumps;
+            if (!hit.collider.CompareTag("Player"))
+            {
+                jumped = false;
+                doubleJumped = false;
+                break;
+            }
         }
-
     }
 
     private void Move()
