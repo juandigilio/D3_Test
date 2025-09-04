@@ -56,19 +56,9 @@ public class PlayerController : MonoBehaviour
         Shoot();
     }
 
-    private void Shoot()
+    public void SetShooting(bool shooting)
     {
-        if (isShooting)
-        {
-            if (!weapons[currentWeapon].HasAmmo())
-            {
-                NextWeapon();
-            }
-
-            Vector2 shootDirection = (sight.transform.localPosition - weapons[currentWeapon].GetFirePointLocalPos()).normalized;
-
-            weapons[currentWeapon].Shoot(shootDirection);
-        }
+        isShooting = shooting;
     }
 
     public void Jump()
@@ -89,16 +79,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void SetShooting(bool shooting)
-    {
-        isShooting = shooting;
-    }
-
     public void NextWeapon()
     {
         currentWeapon++;
         if (currentWeapon > 2) currentWeapon = 0;
-
         SwitchWeapon(NextWeapon);
     }
 
@@ -106,8 +90,18 @@ public class PlayerController : MonoBehaviour
     {
         currentWeapon--;
         if (currentWeapon < 0) currentWeapon = 2;
-
         SwitchWeapon(PreviousWeapon);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        availableLives -= damage;
+
+        if (availableLives <= 0)
+        {
+            gameObject.SetActive(false);
+            //GameManager.Instance.GameOver();
+        }
     }
 
     public void SetInputDirection(Vector2 newDirection)
@@ -153,6 +147,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Shoot()
+    {
+        if (isShooting)
+        {
+            if (!weapons[currentWeapon].HasAmmo())
+            {
+                NextWeapon();
+            }
+
+            Vector2 shootDirection = (sight.transform.localPosition - weapons[currentWeapon].GetFirePointLocalPos()).normalized;
+
+            weapons[currentWeapon].Shoot(shootDirection);
+        }
+    }
+
     private void Move()
     {
         if (inputDirection != Vector2.zero)
@@ -173,9 +182,15 @@ public class PlayerController : MonoBehaviour
 
         if (inputDirection != Vector2.zero)
         {
-            angle = Mathf.Atan2(inputDirection.y, inputDirection.x) * Mathf.Rad2Deg;
+            float rawAngle = Mathf.Atan2(inputDirection.y, inputDirection.x) * Mathf.Rad2Deg;
+
+            angle = Mathf.Round(rawAngle / 45f) * 45f;
+
+            float rad = angle * Mathf.Deg2Rad;
+            Vector2 quantizedDirection = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+
             weapons[currentWeapon].AimAt(angle);
-            sight.transform.localPosition = newDisplacement + (inputDirection * sightOffset);
+            sight.transform.localPosition = newDisplacement + (quantizedDirection * sightOffset);
         }
         else
         {
@@ -205,17 +220,6 @@ public class PlayerController : MonoBehaviour
         else
         {
             onNoAmmo?.Invoke();
-        }
-    }
-
-    internal void TakeDamage(int damage)
-    {
-        availableLives -= damage;
-
-        if (availableLives <= 0)
-        {
-            gameObject.SetActive(false);
-            //GameManager.Instance.GameOver();
         }
     }
 }

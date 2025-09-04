@@ -12,8 +12,8 @@ public class InputManager : MonoBehaviour
     [SerializeField] private string nextWeaponAction = "NextWeapon";
     [SerializeField] private string previousWeaponAction = "PreviousWeapon";
 
-    [SerializeField] private string inGameActionMap = "InGame";
-    [SerializeField] private string menuActionMap = "Menu";
+    //[SerializeField] private string inGameActionMap = "InGame";
+    //[SerializeField] private string menuActionMap = "Menu";
 
     private PlayerInput playerInput;
     private PlayerController playerController;

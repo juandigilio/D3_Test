@@ -44,7 +44,7 @@
                 {
                     "name": "NextWeapon",
                     "type": "Button",
-                    "id": "1ab50755-9406-4dc3-a534-82ec7441fe8a",
+                    "id": "bbf9123f-52d4-4faa-859d-3f2c9cab9c58",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -53,7 +53,7 @@
                 {
                     "name": "PreviousWeapon",
                     "type": "Button",
-                    "id": "0fc2a9d4-2a84-4ef4-ba01-3d759bc98085",
+                    "id": "d9002f83-3241-4a3d-84dc-c73a8d16c897",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -272,7 +272,7 @@
                 },
                 {
                     "name": "",
-                    "id": "b8d0ad13-e7e5-4de5-aaee-2344ca3aa805",
+                    "id": "b7cdf303-a1ed-4c51-822e-f819a68fb123",
                     "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
@@ -283,7 +283,7 @@
                 },
                 {
                     "name": "",
-                    "id": "052c4578-84d9-4073-b420-a1c210eeab2f",
+                    "id": "73e27c2e-dc6f-4d4d-9d41-78c31f1823d9",
                     "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
@@ -294,7 +294,7 @@
                 },
                 {
                     "name": "",
-                    "id": "5a874381-9f39-4c56-91fe-0aa62b00ba30",
+                    "id": "dff51458-4361-42a0-94e0-80c4c78f5912",
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
@@ -305,7 +305,7 @@
                 },
                 {
                     "name": "",
-                    "id": "89048e01-6018-4fec-a6e9-6305a9963694",
+                    "id": "01f7b386-f9a1-471c-ad82-f84e0b680c68",
                     "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",

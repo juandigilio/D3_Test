@@ -27,10 +27,9 @@ public class Weapon : MonoBehaviour
     private int currentAmmo;
 
 
-    private void Start()
+    private void Awake()
     {
         SetWeaponType();
-        currentAmmo = magazineSize;
     }
 
     private void Update()
@@ -90,6 +89,8 @@ public class Weapon : MonoBehaviour
             bulletDamage = 3;
             bulletIsDestroyable = false;
         }
+
+        currentAmmo = magazineSize;
     }
 
     public bool HasAmmo()

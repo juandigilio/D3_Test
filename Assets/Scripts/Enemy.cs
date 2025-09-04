@@ -7,7 +7,6 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Transform rightPoint;
     [SerializeField] private float speed = 20f;
     [SerializeField] private int health = 1;
-    [SerializeField] private int damage = 1;
 
     private PlayerController playerController;
     private Rigidbody2D rigidBody;
@@ -100,7 +99,10 @@ public class Enemy : MonoBehaviour
 
             foreach (RaycastHit2D hit in hits)
             {
-                if (hit.collider == null) continue;
+                if (hit.collider == null)
+                {
+                    continue;
+                }
 
                 if (hit.collider.CompareTag("Bullet"))
                 {
@@ -109,18 +111,21 @@ public class Enemy : MonoBehaviour
 
                 if (hit.collider.CompareTag("Player"))
                 {
-                    Debug.Log("¡Tengo tiro directo al player!");
                     Shoot(direction);
                     isShooting = true;
                 }
                 else
                 {
-                    Debug.Log("Bloqueado por: " + hit.collider.name);
                     isShooting = false;
                 }
 
                 break;
             }
+        }
+        else
+        {
+            Debug.Log("No estoy mirando al player");
+            isShooting = false;
         }
     }
 
