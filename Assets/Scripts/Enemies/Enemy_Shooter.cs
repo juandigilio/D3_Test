@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy_Shooter : MonoBehaviour
 {
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform leftPoint;
