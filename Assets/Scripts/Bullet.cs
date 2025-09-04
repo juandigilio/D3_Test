@@ -3,18 +3,20 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    Vector2 startPosition;
-    Vector2 direction;
+    private PlayerController player;
+    private Vector2 startPosition;
+    private Vector2 direction;
 
-    float speed;
-    float lifeDistance;
-    int damage;
-    bool isDestroyable;
-    bool isActive = false;
+    private float speed;
+    private float lifeDistance;
+    private int damage;
+    private bool isDestroyable;
+    private bool isActive = false;
+    private bool isPlayerBullet = true;
 
     private void Start()
     {
-
+        player = GameManager.Instance.GetPlayerController();
     }
 
     private void Update()
@@ -42,27 +44,50 @@ public class Bullet : MonoBehaviour
     {
         if (!isActive) return;
 
-        if (collision.CompareTag("Enemy"))
+        if (isPlayerBullet)
         {
-            Enemy enemy = collision.GetComponent<Enemy>();
-
-            if (enemy != null)
+            if (collision.CompareTag("Enemy"))
             {
-                enemy.TakeDamage(damage);
+                Enemy enemy = collision.GetComponent<Enemy>();
 
-                if (isDestroyable)
+                if (enemy != null)
                 {
-                    Deactivate();
+                    enemy.TakeDamage(damage);
+
+                    if (isDestroyable)
+                    {
+                        Deactivate();
+                    }
                 }
+            }
+            else
+            {
+                Deactivate();
             }
         }
         else
         {
-            Deactivate();
+            if (collision.CompareTag("Player"))
+            {
+                if (player != null)
+                {
+                    player.TakeDamage(damage);
+
+                    if (isDestroyable)
+                    {
+                        Deactivate();
+                    }
+                }
+            }
+            else
+            {
+                Deactivate();
+            }
         }
+
     }
 
-    public void Activate(Vector2 startPosition, Vector2 direction, float speed, float lifeDistance, int damage, bool isDestroyable)
+    public void Activate(Vector2 startPosition, Vector2 direction, float speed, float lifeDistance, int damage, bool isDestroyable, bool isPlayerWeapon)
     {
         transform.position = startPosition;
         this.startPosition = startPosition;
@@ -71,6 +96,12 @@ public class Bullet : MonoBehaviour
         this.lifeDistance = lifeDistance;
         this.damage = damage;
         this.isDestroyable = isDestroyable;
+        this.isPlayerBullet = isPlayerWeapon;
+
+        if (!isPlayerWeapon)
+        {
+            damage = 1;
+        }
 
         isActive = true;
         gameObject.SetActive(true);

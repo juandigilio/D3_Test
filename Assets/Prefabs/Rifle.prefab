@@ -102,7 +102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94d022374449f554ca0923c16f4a5c6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponHolder: {fileID: 8649154522949841094}
   weaponType: 2
   bulletPrefab: {fileID: 7608452157467363585, guid: dd4dd78d0ccada44582e3057cb8dbe95, type: 3}
   firePoint: {fileID: 8132264761604864919}
@@ -112,6 +111,7 @@ MonoBehaviour:
   bulletLifeDistance: 0
   bulletDamage: 0
   bulletIsDestroyable: 0
+  isPlayerWeapon: 1
 --- !u!1 &3503757953351837292
 GameObject:
   m_ObjectHideFlags: 0

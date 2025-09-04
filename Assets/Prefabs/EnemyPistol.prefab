@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6363106085564004946}
   - component: {fileID: 711054287543329219}
   m_Layer: 0
-  m_Name: Pistol
+  m_Name: EnemyPistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -111,7 +111,6 @@ MonoBehaviour:
   bulletLifeDistance: 0
   bulletDamage: 0
   bulletIsDestroyable: 0
-  isPlayerWeapon: 1
 --- !u!1 &3503757953351837292
 GameObject:
   m_ObjectHideFlags: 0

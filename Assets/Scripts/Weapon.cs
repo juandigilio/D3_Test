@@ -20,6 +20,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] int bulletDamage;
     [SerializeField] bool bulletIsDestroyable;
 
+    [SerializeField] bool isPlayerWeapon;
+
 
     private float fireCooldown;
     private int currentAmmo;
@@ -53,7 +55,7 @@ public class Weapon : MonoBehaviour
             fireCooldown = 0f;
 
             Bullet newBullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-            newBullet.Activate(firePoint.position, direction, bulletSpeed, bulletLifeDistance, bulletDamage, bulletIsDestroyable);
+            newBullet.Activate(firePoint.position, direction, bulletSpeed, bulletLifeDistance, bulletDamage, bulletIsDestroyable, isPlayerWeapon);
 
             currentAmmo--;
         }
