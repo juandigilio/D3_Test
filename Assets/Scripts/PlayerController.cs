@@ -16,6 +16,11 @@ public class PlayerController : MonoBehaviour
     private Vector2 inputDirection;
     private int currentWeapon = 0;
     private bool isShooting = false;
+    private int availableLives = 8;
+
+    private int maxJumps = 2;
+    private int jumpsRemaining;
+    private float rayLength;
 
     //1-Pistol 2-Automatic 3-Rifle
     [SerializeField] private List<Weapon> weapons = new List<Weapon>();
@@ -32,6 +37,11 @@ public class PlayerController : MonoBehaviour
         weapons[0].gameObject.SetActive(true);
         weapons[1].gameObject.SetActive(false);
         weapons[2].gameObject.SetActive(false);
+
+        jumpsRemaining = maxJumps;
+
+        Collider2D col = GetComponent<Collider2D>();
+        rayLength = col.bounds.extents.y;
     }
 
     private void Update()
@@ -41,6 +51,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        CheckGrounded();
+
         Move();
         Aim();
         Shoot();
@@ -58,6 +70,17 @@ public class PlayerController : MonoBehaviour
             Vector2 shootDirection = (sight.transform.localPosition - weapons[currentWeapon].GetFirePointLocalPos()).normalized;
 
             weapons[currentWeapon].Shoot(shootDirection);
+        }
+    }
+
+    public void Jump()
+    {
+        if (jumpsRemaining > 0)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+            jumpsRemaining--;
         }
     }
 
@@ -105,6 +128,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void CheckGrounded()
+    {
+        float extraHeight = 0.1f;
+
+        Debug.DrawRay(transform.position, Vector2.down * (rayLength + extraHeight), Color.green);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, rayLength + extraHeight);
+
+        if (hit.collider != null)
+        {
+            jumpsRemaining = maxJumps;
+        }
+
+    }
+
     private void Move()
     {
         if (inputDirection != Vector2.zero)
@@ -128,8 +165,6 @@ public class PlayerController : MonoBehaviour
             angle = Mathf.Atan2(inputDirection.y, inputDirection.x) * Mathf.Rad2Deg;
             weapons[currentWeapon].AimAt(angle);
             sight.transform.localPosition = newDisplacement + (inputDirection * sightOffset);
-
-            Debug.DrawRay(weapons[currentWeapon].GetFirePointWorldPos(), direction * inputDirection, Color.red, 0.1f);
         }
         else
         {
@@ -138,7 +173,6 @@ public class PlayerController : MonoBehaviour
 
             weapons[currentWeapon].AimAt(angle);
             sight.transform.localPosition = new Vector2(direction * sightOffset, 0) + newDisplacement;
-            Debug.DrawRay(weapons[currentWeapon].GetFirePointWorldPos(), 50 * inputDirection, Color.red, 0.1f);
         }
     }
 
@@ -160,6 +194,17 @@ public class PlayerController : MonoBehaviour
         else
         {
             onNoAmmo?.Invoke();
+        }
+    }
+
+    internal void TakeDamage(int damage)
+    {
+        availableLives -= damage;
+
+        if (availableLives <= 0)
+        {
+            gameObject.SetActive(false);
+            //GameManager.Instance.GameOver();
         }
     }
 }
