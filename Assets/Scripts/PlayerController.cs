@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -54,7 +55,7 @@ public class PlayerController : MonoBehaviour
                 NextWeapon();
             }
 
-            Vector2 shootDirection = (sight.transform.localPosition - weapons[currentWeapon].GetFirePoint()).normalized;
+            Vector2 shootDirection = (sight.transform.localPosition - weapons[currentWeapon].GetFirePointLocalPos()).normalized;
 
             weapons[currentWeapon].Shoot(shootDirection);
         }
@@ -120,13 +121,15 @@ public class PlayerController : MonoBehaviour
     private void Aim()
     {
         float angle;
-        Vector2 newDisplacement = weapons[currentWeapon].GetFirePoint();
+        Vector2 newDisplacement = weapons[currentWeapon].GetFirePointLocalPos();
 
         if (inputDirection != Vector2.zero)
         {
             angle = Mathf.Atan2(inputDirection.y, inputDirection.x) * Mathf.Rad2Deg;
             weapons[currentWeapon].AimAt(angle);
             sight.transform.localPosition = newDisplacement + (inputDirection * sightOffset);
+
+            Debug.DrawRay(weapons[currentWeapon].GetFirePointWorldPos(), direction * inputDirection, Color.red, 0.1f);
         }
         else
         {
@@ -135,6 +138,7 @@ public class PlayerController : MonoBehaviour
 
             weapons[currentWeapon].AimAt(angle);
             sight.transform.localPosition = new Vector2(direction * sightOffset, 0) + newDisplacement;
+            Debug.DrawRay(weapons[currentWeapon].GetFirePointWorldPos(), 50 * inputDirection, Color.red, 0.1f);
         }
     }
 

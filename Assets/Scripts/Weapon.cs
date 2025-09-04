@@ -95,8 +95,13 @@ public class Weapon : MonoBehaviour
         return currentAmmo > 0;
     }
 
-    public Vector3 GetFirePoint()
+    public Vector3 GetFirePointLocalPos()
     {
         return firePoint.localPosition;
+    }
+
+    public Vector3 GetFirePointWorldPos()
+    {
+        return firePoint.position;
     }
 }

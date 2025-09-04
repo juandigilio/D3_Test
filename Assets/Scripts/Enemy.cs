@@ -82,6 +82,7 @@ public class Enemy : MonoBehaviour
                 movingRight = true;
             }
         }
+
         Vector2 movemenDirection = new Vector2(direction.x * speed, rigidBody.linearVelocity.y);
         rigidBody.linearVelocity = movemenDirection;
     }
@@ -94,23 +95,31 @@ public class Enemy : MonoBehaviour
             Vector2 direction = (playerController.transform.position - transform.position).normalized;
             float distance = Vector2.Distance(transform.position, playerController.transform.position);
 
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance);
+            Debug.DrawRay(weapon.GetFirePointWorldPos(), direction * distance, Color.red, 0.1f);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(weapon.GetFirePointWorldPos(), direction, distance);
 
-            if (hit.collider != null)
+            foreach (RaycastHit2D hit in hits)
             {
+                if (hit.collider == null) continue;
+
+                if (hit.collider.CompareTag("Bullet"))
+                {
+                    continue;
+                }
+
                 if (hit.collider.CompareTag("Player"))
                 {
                     Debug.Log("¡Tengo tiro directo al player!");
-
                     Shoot(direction);
                     isShooting = true;
                 }
                 else
                 {
                     Debug.Log("Bloqueado por: " + hit.collider.name);
-
                     isShooting = false;
                 }
+
+                break;
             }
         }
     }
