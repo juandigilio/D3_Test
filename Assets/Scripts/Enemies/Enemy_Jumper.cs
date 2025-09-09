@@ -6,14 +6,19 @@ public class Enemy_Jumper : MonoBehaviour
     [SerializeField] private Transform rightPoint;
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float jumpCooldown = 1f;
-    [SerializeField] private float meleeRange = 2f;
     [SerializeField] private float maxJumpTime = 1f;
     [SerializeField] private int health = 1;
+    [SerializeField] private float jumpingRange = 7f;
+    [SerializeField] private float walkingRange = 2f;
+    [SerializeField] private float attackRange = 0.1f;
+    [SerializeField] private int damage = 1;
+    [SerializeField] private float attackCooldown = 1f;
 
     private Rigidbody2D rb;
     private PlayerController player;
     private bool movingRight = true;
     private bool canJump = true;
+    private bool isAttacking = false;
 
     private void Start()
     {
@@ -24,13 +29,18 @@ public class Enemy_Jumper : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float distance = Vector2.Distance(transform.position, player.transform.position);
+        UpdateCurrentState();
+    }
 
-        if (distance <= meleeRange)
+    private void UpdateCurrentState()
+    {
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+  
+        if (distance <= walkingRange)
         {
             WalkTowardsPlayer();
         }
-        else if (canJump)
+        else if (distance <= jumpingRange && canJump)
         {
             JumpTowardsPlayer();
         }
@@ -38,6 +48,33 @@ public class Enemy_Jumper : MonoBehaviour
         {
             Patrol();
         }
+
+        CheckAttackState(distance);
+    }
+
+    private void CheckAttackState(float distance)
+    {
+        if (distance <= attackRange)
+        {
+            if (!isAttacking)
+            {
+                isAttacking = true;
+                InvokeRepeating(nameof(Attack), 0f, attackCooldown);
+            }
+        }
+        else
+        {
+            if (isAttacking)
+            {
+                isAttacking = false;
+                CancelInvoke(nameof(Attack));
+            }
+        }
+    }
+
+    private void Attack()
+    {
+        player.TakeDamage(damage);
     }
 
     private void WalkTowardsPlayer()
