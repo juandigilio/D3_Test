@@ -12,6 +12,7 @@ public class Enemy_Shooter : MonoBehaviour
     private Rigidbody2D rigidBody;
     [SerializeField] private bool movingRight = true;
     [SerializeField] private bool isShooting = false;
+    private float shootDistance;
 
 
 
@@ -35,6 +36,8 @@ public class Enemy_Shooter : MonoBehaviour
         }
 
         transform.position = leftPoint.position;
+
+        shootDistance = weapon.GetWeaponRange();
     }
 
     private void Update()
@@ -93,6 +96,12 @@ public class Enemy_Shooter : MonoBehaviour
         {
             Vector2 direction = (playerController.transform.position - transform.position).normalized;
             float distance = Vector2.Distance(transform.position, playerController.transform.position);
+
+            if (distance > shootDistance) 
+            {
+                isShooting = false;
+                return;
+            }
 
             Debug.DrawRay(weapon.GetFirePointWorldPos(), direction * distance, Color.red, 0.1f);
             RaycastHit2D[] hits = Physics2D.RaycastAll(weapon.GetFirePointWorldPos(), direction, distance);

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum WeaponType
@@ -106,5 +107,10 @@ public class Weapon : MonoBehaviour
     public Vector3 GetFirePointWorldPos()
     {
         return firePoint.position;
+    }
+
+    internal float GetWeaponRange()
+    {
+        return bulletLifeDistance;
     }
 }
