@@ -62,7 +62,11 @@ public class Enemy_Shooter : MonoBehaviour
 
     private void Patroll()
     {
-        if (isShooting) return;
+        if (isShooting)
+        {
+            rigidBody.linearVelocity = new Vector2(0, rigidBody.linearVelocity.y);
+            return;
+        }
 
         Vector2 direction;
 
@@ -106,6 +110,8 @@ public class Enemy_Shooter : MonoBehaviour
             Debug.DrawRay(weapon.GetFirePointWorldPos(), direction * distance, Color.red, 0.1f);
             RaycastHit2D[] hits = Physics2D.RaycastAll(weapon.GetFirePointWorldPos(), direction, distance);
 
+            isShooting = false;
+
             foreach (RaycastHit2D hit in hits)
             {
                 if (hit.collider == null)
@@ -123,10 +129,10 @@ public class Enemy_Shooter : MonoBehaviour
                     Shoot(direction);
                     isShooting = true;
                 }
-                else
-                {
-                    isShooting = false;
-                }
+                //else
+                //{
+                //    isShooting = false;
+                //}
 
                 break;
             }
