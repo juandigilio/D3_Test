@@ -1,42 +1,18 @@
 using UnityEngine;
 
-public class Enemy_Shooter : MonoBehaviour
+public class Enemy_Shooter : Enemy
 {
     [SerializeField] private Weapon weapon;
-    [SerializeField] private Transform leftPoint;
-    [SerializeField] private Transform rightPoint;
     [SerializeField] private float speed = 20f;
-    [SerializeField] private int health = 1;
 
     private PlayerController playerController;
-    private Rigidbody2D rigidBody;
-    [SerializeField] private bool movingRight = true;
-    [SerializeField] private bool isShooting = false;
+    private bool isShooting = false;
     private float shootDistance;
-
 
 
     private void Start()
     {
-        rigidBody = GetComponent<Rigidbody2D>();
-        if (rigidBody == null)
-        {
-            Debug.LogError("Rigidbody2D component not found on the enemy.");
-        }
-
-        playerController = GameManager.Instance.GetPlayerController();
-        if (playerController == null)
-        {
-            Debug.LogError("PlayerController not found in GameManager.");
-        }
-
-        if (leftPoint == null || rightPoint == null)
-        {
-            Debug.LogError("Patrol points not assigned.");
-        }
-
-        transform.position = leftPoint.position;
-
+        availableLives = 1;
         shootDistance = weapon.GetWeaponRange();
     }
 
@@ -64,7 +40,7 @@ public class Enemy_Shooter : MonoBehaviour
     {
         if (isShooting)
         {
-            rigidBody.linearVelocity = new Vector2(0, rigidBody.linearVelocity.y);
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             return;
         }
 
@@ -89,8 +65,8 @@ public class Enemy_Shooter : MonoBehaviour
             }
         }
 
-        Vector2 movemenDirection = new Vector2(direction.x * speed, rigidBody.linearVelocity.y);
-        rigidBody.linearVelocity = movemenDirection;
+        Vector2 movemenDirection = new Vector2(direction.x * speed, rb.linearVelocity.y);
+        rb.linearVelocity = movemenDirection;
     }
 
     private void Attack()

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MyEntity
 {
     [SerializeField] private GameObject sight;
     [SerializeField] private float sightOffset = 1f;
@@ -11,19 +10,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private LayerMask groundLayer;
 
-    private Rigidbody2D rb;
+    //1-Pistol 2-Automatic 3-Rifle
+    [SerializeField] private List<Weapon> weapons = new List<Weapon>();
+
     private float direction = 1f;
     private Vector2 inputDirection;
     private int currentWeapon = 0;
     private bool isShooting = false;
-    private int availableLives = 8;
 
-    private bool jumped = false;
-    private bool doubleJumped = false;
-    private float rayLength;
-
-    //1-Pistol 2-Automatic 3-Rifle
-    [SerializeField] private List<Weapon> weapons = new List<Weapon>();
 
     private void OnEnable()
     {
@@ -32,14 +26,11 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        availableLives = 8;
 
         weapons[0].gameObject.SetActive(true);
         weapons[1].gameObject.SetActive(false);
-        weapons[2].gameObject.SetActive(false);
-
-        Collider2D col = GetComponent<Collider2D>();
-        rayLength = col.bounds.extents.y;
+        weapons[2].gameObject.SetActive(false);       
     }
 
     private void Update()
@@ -49,8 +40,6 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        CheckGrounded();
-
         Move();
         Aim();
         Shoot();
@@ -92,18 +81,7 @@ public class PlayerController : MonoBehaviour
         if (currentWeapon < 0) currentWeapon = 2;
         SwitchWeapon(PreviousWeapon);
     }
-
-    public void TakeDamage(int damage)
-    {
-        availableLives -= damage;
-
-        if (availableLives <= 0)
-        {
-            gameObject.SetActive(false);
-            //GameManager.Instance.GameOver();
-        }
-    }
-
+    
     public void SetInputDirection(Vector2 newDirection)
     {
         inputDirection = newDirection.normalized;
@@ -123,26 +101,6 @@ public class PlayerController : MonoBehaviour
                 //transform.localScale = new Vector3(-1, 1, 1);
                 //sight.transform.localScale = new Vector3(-1, 1, 1);
                 //weapons[currentWeapon].transform.localScale = new Vector3(-1, 1, 1);
-            }
-        }
-    }
-
-    private void CheckGrounded()
-    {
-        if (rb.linearVelocityY > 0) return;
-
-        float extraHeight = 0.1f;
-
-        Debug.DrawRay(transform.position, Vector2.down * (rayLength + extraHeight), Color.green);
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, Vector2.down, rayLength + extraHeight);
-
-        foreach (RaycastHit2D hit in hits)
-        {
-            if (!hit.collider.CompareTag("Player"))
-            {
-                jumped = false;
-                doubleJumped = false;
-                break;
             }
         }
     }
